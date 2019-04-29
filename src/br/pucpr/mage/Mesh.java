@@ -1,5 +1,6 @@
 package br.pucpr.mage;
 
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
@@ -24,6 +25,7 @@ public class Mesh {
 
     private Map<String, ArrayBuffer> attributes = new HashMap<>();
     private Map<String, Uniform> uniforms = new HashMap<>();
+    private boolean wireframe = false;
 
     Mesh() {
         id = glGenVertexArrays();
@@ -176,6 +178,23 @@ public class Mesh {
     }
 
     /**
+     * Define se a malha sera desenhada no modo wireframe ou não
+     * @param wireframe True para desenhar wireframe
+     * @return A própria malha.
+     */
+    public Mesh setWireframe(boolean wireframe) {
+        this.wireframe = wireframe;
+        return this;
+    }
+
+    /**
+     * @return True se desenhará apenas o wireframe, falso se a malha será desenhada de maneira sólida
+     */
+    public boolean isWireframe() {
+        return wireframe;
+    }
+
+    /**
      * Desenha a malha.
      * @return A própria mesh
      */
@@ -183,6 +202,8 @@ public class Mesh {
         if (shader == null || attributes.size() == 0) {
             return this;
         }
+
+        glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_LINE : GL_FILL);
 
         //Precisamos dizer qual VAO iremos desenhar
         glBindVertexArray(id);
